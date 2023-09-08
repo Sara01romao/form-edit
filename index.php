@@ -30,42 +30,53 @@ include './conexao.php';
 
        
         <?php
-                
+
+       
+
 
                 $sql= "SELECT * FROM `formcampos`";
                
                 $busca = mysqli_query($conexao, $sql);
         
       
-        
-                while ($array= mysqli_fetch_array($busca)){
-                    $id= $array['id'];
-                    $name= $array['name'];
-                    $tipo= $array['tipo'];
-    
-        ?>
-        
-        
-    
-                <?php
-                    if($tipo == "input"){
-                        
-                        
-                        echo " <div><a href='remover.php?id=$id'>Remover</a><div class='campo-container'><label for='$name'>$name</label> <input type='text' name='$name'></div></div>";
-
-                    }elseif ($tipo == "textarea") {
-                        echo "<div class='campo-container'><label for='$name'>$name</label><textarea name='$name'></textarea></div>";
-                    }
-                    
-                ?>   
-
-  
-        
-
-        <?php } ?>
-   
+                while ($array = mysqli_fetch_array($busca)) {
+                    $id = $array['id'];
+                    $name = $array['name'];
+                    $tipo = $array['tipo'];
                 
+                    echo "<div><a href='remover.php?id=$id'>Remover</a><div class='campo-container'>";
+                
+                    if ($tipo == "input") {
+                        echo "<label for='$name'>$name</label> <input type='text' name='$name'>";
+                        
+                    } elseif ($tipo == "textarea") {
+                        echo "<label for='$name'>$name</label><textarea name='$name'></textarea>";
+                    } elseif ($tipo == "select") {
+                        echo "<label for='$name'>$name</label><select name='$name'>";
+                        
+                        $sql_option = "SELECT opcaocampo.*
+                                        FROM opcaocampo
+                                        JOIN formcampos ON opcaocampo.id_formcampo = formcampos.id
+                                        WHERE formcampos.id = $id";
+                                        
+                        $busca_option = mysqli_query($conexao, $sql_option);
+                
+                        while ($option_array = mysqli_fetch_array($busca_option)) {
+                            $id_op = $option_array['id'];
+                            $nome_opcao = $option_array['nome_opcao'];
+                
+                            echo "<option value='$id_op'>$nome_opcao</option>";
+                        }
+                        
+                        echo "</select>";
+                    }
+                
+                    echo "</div></div>";
+                }
+                ?> 
 
+
+      
         </form>
     </div>
 

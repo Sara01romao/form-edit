@@ -87,6 +87,83 @@ if(isset($_POST['acao'])){
 
 
 
+   <div class="container">
+         
+       <form action="add.php" class="cadastrar-campo" method="post">
+           <input type="hidden" name="acao">
+
+           
+           <label for="">Nome do campo</label>
+           <input type="text" name="name" required>
+           
+
+
+           <label for="">Selecione o Tipo</label>
+
+           <select name="" id="">
+             <option value="">Campo Texto Simples</option>
+             <option value="">Campo para texto longo</option>
+             <option value="">Lista de opções</option>
+             
+           </select>
+
+           <div class="list-option-container">
+                
+                <div class="opcao">
+                    <label for="">Adicionar opção</label>
+                    <input type="text" id="opcao-value" name="opcao" required>
+                    <button type="button" id="add-opcao">Adicionar</button>
+                </div>
+               
+                
+                
+
+           </div>
+           
+
+           <script>
+            //  var listaOpcao =[];
+            
+
+            //  document.querySelector('#add-opcao').addEventListener('click', function(){
+                  
+            //     document.querySelector('.opcao').value;
+
+
+            //  })
+
+
+             document.querySelector('#add-opcao').addEventListener('click', function(){
+                
+                var num= document.querySelector('#opcao-value' ).value;
+                  
+               
+                var listaOpcao =[];
+                
+                 listaOpcao
+
+                
+
+
+             })
+
+            
+
+             
+
+             
+
+           </script>
+           
+          
+        <button>Salvar</button>
+              
+       </form>
+
+   </div>
+
+
+
 
 
     <style>
