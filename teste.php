@@ -93,108 +93,68 @@ if(isset($_POST['acao'])){
 <body>
 <h1>itens</h1>
 
-<style>
-    #lista-container {
-            display: none; /* Esconde a lista inicialmente */
-        }
-</style>
 
+
+<section class="form-section">
    <form action="teste.php" class="cadastrar-campo" method="post">
-           <input type="hidden" name="acao">
+        <input type="hidden" name="acao">
 
 
-           
-           <label for="">Nome do campo</label>
-           <input type="text" name="name" required>
-           
+        <div class="campo-container">
+        <label for="name">Nome do campo</label>
+        <input type="text" name="name" required>
+        </div>
+        
+        
+        <div class="campo-container">
+            <label for="tipo">Tipo do campo</label>
+            <select name="tipo" id="tipo" onchange="mostrarLista()">
+                <option value="">Selecionar</option>
+                <option value="input">Campo Simples</option>
+                <option value="textarea">Texto Longo</option>
+                <option value="select">Lista com Itens</option>
+            </select>
 
-           <select name="tipo" id="tipo" onchange="mostrarLista()">
-             <option value="">selecione</option>
-             <option value="input">Campo Simples</option>
-             <option value="textarea">Texto Longo</option>
-             <option value="select">Lista com Itens</option>
-           </select>
-          
-           <div class="lista-container" id="lista-container">
-             <!-- Campo de entrada e botão de adição -->
-            <input type="text" id="item" placeholder="Digite um item">
-            <button type="button" onclick="adicionarItem()">Adicionar</button>
+        </div>
+        
+        <div class="lista-container" id="lista-container">
+        
+        <div class="campo-container">
+            <!-- Campo de entrada e botão de adição -->
+            <label for="tipo">Adicionar Opções</label>
+            
+            <div>
+                <input type="text" id="item" placeholder="Digite um item">
+                <button type="button" onclick="adicionarItem()">Adicionar</button>
+            </div>
+        </div>
+         
+        <ul id="lista">
+        
+        </ul>
+        </div>
+        
+        <input type="hidden" name="itens" id="itens-hidden" value="">
 
-            <ul id="lista">
-          
-           </ul>
-           </div>
-           
-           <input type="hidden" name="itens" id="itens-hidden" value="">
-
-          
-           
-          
+        
+        
+        
         <button>Salvar</button>
-              
+            
     </form>
 
-
+    </section>
    
 
-    <!-- Lista de itens -->
-    <!-- <ul id="lista">
-    </ul> -->
+ 
 
-    <script>
-        //   function adicionarItem() {
-        //     var itemInput = document.getElementById("item");
-        //     var itemTexto = itemInput.value;
+<script>
+       
 
-        //     if (itemTexto.trim() !== "") {
-        //         var lista = document.getElementById("lista");
-        //         var novoItem = document.createElement("li");
-        //         novoItem.textContent = itemTexto;
+    
 
-        //         // Botão "Editar" para editar o item
-        //         var botaoEditar = document.createElement("button");
-        //         botaoEditar.textContent = "Editar";
-        //         botaoEditar.onclick = function() {
-        //             // Troca para o modo de edição
-        //             novoItem.innerHTML = ""; // Limpa o conteúdo
-
-        //             // Campo de entrada para edição
-        //             var inputEditar = document.createElement("input");
-        //             inputEditar.type = "text";
-        //             inputEditar.value = itemTexto;
-
-        //             // Botão "Salvar" para salvar a edição
-        //             var botaoSalvar = document.createElement("button");
-        //             botaoSalvar.textContent = "Salvar";
-        //             botaoSalvar.onclick = function() {
-        //                 itemTexto = inputEditar.value;
-        //                 novoItem.innerHTML = itemTexto;
-        //                 novoItem.appendChild(botaoEditar);
-        //                 novoItem.appendChild(botaoRemover);
-        //             };
-
-        //             novoItem.appendChild(inputEditar);
-        //             novoItem.appendChild(botaoSalvar);
-        //         };
-
-        //         // Botão "Remover" para remover o item
-        //         var botaoRemover = document.createElement("button");
-        //         botaoRemover.textContent = "Remover";
-        //         botaoRemover.onclick = function() {
-        //             lista.removeChild(novoItem); // Remove o item da lista
-        //         };
-
-        //         novoItem.appendChild(botaoEditar);
-        //         novoItem.appendChild(botaoRemover);
-
-        //         lista.appendChild(novoItem);
-
-        //         // Limpa o campo de entrada após adicionar o item
-        //         itemInput.value = "";
-        //     }
-        // }
-
-        function adicionarItem() {
+    
+    function adicionarItem() {
     var itemInput = document.getElementById("item");
     var itemTexto = itemInput.value;
 
@@ -214,9 +174,11 @@ if(isset($_POST['acao'])){
         // Botão "Editar" para editar o item
         var botaoEditar = document.createElement("button");
         botaoEditar.textContent = "Editar";
-        botaoEditar.onclick = function() {
+        botaoEditar.onclick = function () {
             // Troca para o modo de edição
-            paragrafo.innerHTML = ""; // Limpa o conteúdo
+            paragrafo.style.display = "none"; // Oculta o parágrafo
+            botaoEditar.style.display = "none"; // Oculta o botão "Editar"
+            botaoRemover.style.display = "none"; // Oculta o botão "Remover"
 
             // Campo de entrada para edição
             var inputEditar = document.createElement("input");
@@ -226,9 +188,17 @@ if(isset($_POST['acao'])){
             // Botão "Salvar" para salvar a edição
             var botaoSalvar = document.createElement("button");
             botaoSalvar.textContent = "Salvar";
-            botaoSalvar.onclick = function() {
+            botaoSalvar.onclick = function () {
                 itemTexto = inputEditar.value;
                 paragrafo.textContent = itemTexto;
+                paragrafo.style.display = "block"; // Exibe o parágrafo novamente
+                botaoEditar.style.display = "inline"; // Exibe o botão "Editar"
+                botaoRemover.style.display = "inline"; // Exibe o botão "Remover"
+
+                // Remove os campos de edição e salvar
+                novoItem.removeChild(inputEditar);
+                novoItem.removeChild(botaoSalvar);
+
                 atualizarItens();
             };
 
@@ -239,7 +209,7 @@ if(isset($_POST['acao'])){
         // Botão "Remover" para remover o item
         var botaoRemover = document.createElement("button");
         botaoRemover.textContent = "Remover";
-        botaoRemover.onclick = function() {
+        botaoRemover.onclick = function () {
             lista.removeChild(novoItem); // Remove o item da lista
             atualizarItens();
         };
@@ -258,27 +228,27 @@ if(isset($_POST['acao'])){
 
 
 
-function atualizarItensReais() {
-    var lista = document.getElementById("lista");
-    var itensArray = [];
+        function atualizarItensReais() {
+            var lista = document.getElementById("lista");
+            var itensArray = [];
 
-    // Coleta os itens reais da lista atual, excluindo os que contêm "Editar" ou "Remover"
-    for (var i = 0; i < lista.children.length; i++) {
-        var item = lista.children[i];
+            // Coleta os itens reais da lista atual, excluindo os que contêm "Editar" ou "Remover"
+            for (var i = 0; i < lista.children.length; i++) {
+                var item = lista.children[i];
 
-        // Verifica se o elemento contém um parágrafo
-        var paragrafo = item.querySelector("p");
+                // Verifica se o elemento contém um parágrafo
+                var paragrafo = item.querySelector("p");
 
-        // Se o elemento contiver um parágrafo, adiciona o conteúdo do parágrafo
-        if (paragrafo) {
-            itensArray.push(paragrafo.textContent);
+                // Se o elemento contiver um parágrafo, adiciona o conteúdo do parágrafo
+                if (paragrafo) {
+                    itensArray.push(paragrafo.textContent);
+                }
+            }
+
+            // Atualiza o campo oculto "itens-hidden" com a lista em formato JSON
+            var itensHidden = document.getElementById("itens-hidden");
+            itensHidden.value = JSON.stringify(itensArray);
         }
-    }
-
-    // Atualiza o campo oculto "itens-hidden" com a lista em formato JSON
-    var itensHidden = document.getElementById("itens-hidden");
-    itensHidden.value = JSON.stringify(itensArray);
-}
 
 
 
@@ -293,5 +263,102 @@ function atualizarItensReais() {
             }
         }
 </script>
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&display=swap');
+
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Ubuntu', sans-serif;
+    }
+
+    ul{
+        text-decoration: none;
+    }
+
+    #lista-container {
+            /*display: none;*/ /* Esconde a lista inicialmente */
+        }
+
+
+    .cadastrar-campo{
+        border: 1px solid red;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 30px;
+    }
+
+    .campo-container{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        
+    }
+
+    .campo-container input{
+        width: 100%;
+        height: 35px;
+        border: solid 1px #CCCCCC;
+        padding: 0px 10px;
+        font-size: 16px;
+
+    }
+
+    .campo-container select{
+        width: 100%;
+        height: 35px;
+        border: solid 1px #CCCCCC;
+        font-size: 16px;
+        padding: 0px 10px;
+    }
+
+    .form-section{
+        max-width: 1200px;
+        border: 1px solid blue;
+        margin: 0 auto;
+    }
+
+    .lista-container .campo-container div{
+        display: flex;
+
+    }
+
+    .lista-container .campo-container button{
+        width: 148px;
+        font-size: 15px;
+        background: #0094E1;
+        border: none;
+        color: #fff;
+        
+    }
+
+    #lista li{
+        display: flex;
+        border: solid 1px #CCCCCC;
+        height: 35px;
+        padding-left:10px ;
+        margin-top: 10px;
+
+    }
+
+    #lista li p{
+        display: flex;
+        align-items: center;
+    }
+    
+    #lista  li > button{
+      width: 62.5px;
+    }
+
+    #lista  li > button:nth-child(2){
+        margin: 0px 0px 0px auto;
+    }
+
+
+</style>
 </body>
 </html>
