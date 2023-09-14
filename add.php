@@ -10,21 +10,64 @@ include './conexao.php';
  
 if(isset($_POST['acao'])){
     $name = $_POST['name'];
-
     $tipo = $_POST['tipo'];
 
+    $lista = $_POST['itens'];
+
+    $array_lista =  json_decode($lista);
+
+   
+
+
+    // Insira o campo na tabela "campo"
+    $sql_campo = "INSERT INTO `formcampos`(`name`, `tipo`)  VALUES ('$name', '$tipo')";
+
+    if ($inserir_campo = mysqli_query($conexao, $sql_campo)) {
+        echo "Campo criado com sucesso: $name<br>";
+
+        // Obtém o ID do campo recém-inserido
+        $id_campo = $conexao->insert_id;
+
+        // Insira as opções na tabela "opcoes" associadas ao campo
+
+          
+        if (is_array($array_lista )) {
+            foreach ($array_lista  as $item) {
+                $sql_opcao = "INSERT INTO `opcaocampo`(`id_formcampo`, `nome_opcao`) VALUES ('$id_campo', '$item')";
     
- 
+                if ($inserir_opcao = mysqli_query($conexao, $sql_opcao)) {
+                    // Sucesso na inserção da opção
+                } else {
+                    echo "Erro ao inserir opção: " . $conexao->error . "<br>";
+                }
+            }
+        } else {
+            // Trate o caso em que $lista não é um array
+            echo "A variável \$lista não é um array.";
+        }
+
+        header("Location: ./index.php");
+        
+    } else {
+        echo "Erro ao criar campo: " . $conexao->error . "<br>";
+    }
+
+    // Feche a conexão com o banco de dados quando terminar
+    $conexao->close();
 
 
+    $lista = $_POST['itens'];
 
   
-     $sql= "INSERT INTO `formcampos`(`name`, `tipo`) VALUES ('$name','$tipo')";
-       
-     $inserir= mysqli_query($conexao, $sql);
+    
+    
+    // echo $lista;
 
+    // echo $name;
+    // echo $tipo;
 
-    header("Location: ./index.php");
+    
+
     
 }
 
@@ -38,6 +81,8 @@ if(isset($_POST['acao'])){
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,166 +91,328 @@ if(isset($_POST['acao'])){
     <title>Document</title>
 </head>
 <body>
+
+<section class="form-section">
+
+   <h2>Configuração do campo</h2>
+
+   <form action="add.php" class="cadastrar-campo" method="post">
+        <input type="hidden" name="acao">
+
+
+        <div class="campo-container">
+        <label for="name">Nome do campo</label>
+        <input type="text" name="name" required>
+        </div>
+        
+        
+        <div class="campo-container">
+            <label for="tipo">Tipo do campo</label>
+            <select name="tipo" id="tipo" onchange="mostrarLista()" required>>
+                <option value="">Selecionar</option>
+                <option value="input">Campo Simples</option>
+                <option value="textarea">Texto Longo</option>
+                <option value="select">Lista com Itens</option>
+            </select>
+
+        </div>
+        
+        <div class="lista-container" id="lista-container">
+        
+        <div class="campo-container">
+            <!-- Campo de entrada e botão de adição -->
+            <label for="tipo">Adicionar Opções</label>
+            
+            <div>
+                <input type="text" id="item" placeholder="Digite um item">
+                <button type="button" onclick="adicionarItem()">Adicionar</button>
+            </div>
+        </div>
+         
+        <div class="lista-container">
+            <p class="opcao-title">Opções</p>
+            <ul  id="lista">
+            
+            </ul>
+        </div>
+        
+        </div>
+        
+        <input type="hidden" name="itens" id="itens-hidden" value="">
+
+        
+        
+        
+        <button class="btn-salvar">Salvar</button>
+            
+    </form>
+
+    </section>
+   
+
+ 
+
+<script>
+       
+
     
-   edit
+
+    
+    function adicionarItem() {
+    var itemInput = document.getElementById("item");
+    var itemTexto = itemInput.value;
+
+    if (itemTexto.trim() !== "") {
+        var lista = document.getElementById("lista");
+        var novoItem = document.createElement("li");
+
+        // Cria um elemento <p> para o texto do item
+        var paragrafo = document.createElement("p");
+        paragrafo.textContent = itemTexto;
+
+        // Adiciona o parágrafo à <li>
+        novoItem.appendChild(paragrafo);
+
+        lista.appendChild(novoItem);
+
+        // Botão "Editar" para editar o item
+        var botaoEditar = document.createElement("button");
+        botaoEditar.textContent = "Editar";
+        botaoEditar.onclick = function () {
+            // Troca para o modo de edição
+            paragrafo.style.display = "none"; // Oculta o parágrafo
+            botaoEditar.style.display = "none"; // Oculta o botão "Editar"
+            botaoRemover.style.display = "none"; // Oculta o botão "Remover"
+
+            // Campo de entrada para edição
+            var inputEditar = document.createElement("input");
+            inputEditar.type = "text";
+            inputEditar.value = itemTexto;
+
+            // Botão "Salvar" para salvar a edição
+            var botaoSalvar = document.createElement("button");
+            botaoSalvar.textContent = "Salvar";
+            botaoSalvar.onclick = function () {
+                itemTexto = inputEditar.value;
+                paragrafo.textContent = itemTexto;
+                paragrafo.style.display = "flex"; // Exibe o parágrafo novamente
+                botaoEditar.style.display = "inline"; // Exibe o botão "Editar"
+                botaoRemover.style.display = "inline"; // Exibe o botão "Remover"
+
+                // Remove os campos de edição e salvar
+                novoItem.removeChild(inputEditar);
+                novoItem.removeChild(botaoSalvar);
+
+                atualizarItens();
+            };
+
+            novoItem.appendChild(inputEditar);
+            novoItem.appendChild(botaoSalvar);
+        };
+
+        // Botão "Remover" para remover o item
+        var botaoRemover = document.createElement("button");
+        botaoRemover.textContent = " Remover";
+        botaoRemover.onclick = function () {
+            lista.removeChild(novoItem); // Remove o item da lista
+            atualizarItens();
+        };
+
+        // Adicione os botões "Editar" e "Remover" fora do parágrafo
+        novoItem.appendChild(botaoEditar);
+        novoItem.appendChild(botaoRemover);
+
+        // Limpa o campo de entrada após adicionar o item
+        itemInput.value = "";
+
+        // Atualize o campo oculto "itens-hidden" com a lista de itens reais
+        atualizarItensReais();
+    }
+}
+
+
+
+        function atualizarItensReais() {
+            var lista = document.getElementById("lista");
+            var itensArray = [];
+
+            // Coleta os itens reais da lista atual, excluindo os que contêm "Editar" ou "Remover"
+            for (var i = 0; i < lista.children.length; i++) {
+                var item = lista.children[i];
+
+                // Verifica se o elemento contém um parágrafo
+                var paragrafo = item.querySelector("p");
+
+                // Se o elemento contiver um parágrafo, adiciona o conteúdo do parágrafo
+                if (paragrafo) {
+                    itensArray.push(paragrafo.textContent);
+                }
+            }
+
+            // Atualiza o campo oculto "itens-hidden" com a lista em formato JSON
+            var itensHidden = document.getElementById("itens-hidden");
+            itensHidden.value = JSON.stringify(itensArray);
+        }
+
+
+
+        function mostrarLista() {
+            var tipoSelecionado = document.getElementById("tipo").value;
+            var lista = document.getElementById("lista-container");
+
+            if (tipoSelecionado === "select") {
+                lista.style.display = "block"; // Mostra a lista
+            } else {
+                lista.style.display = "none";  // Esconde a lista
+            }
+        }
+</script>
+
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;700&display=swap');
+
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'arial', sans-serif;
+    }
+
+    body{
+        background: #ebeff2;
+    }
+
+    ul{
+        text-decoration: none;
+    }
+
+    .form-section{
+        max-width: 1200px;
+        margin: 0 auto;
+
+        padding: 30px;
+        box-shadow: 0 2px 2px 0 rgba(0,0,0,.05), 0 3px 1px -2px rgba(0,0,0,.08), 0 1px 5px 0 rgba(0,0,0,.08);
+        background: #fff;
+    }
+
+    
+
+    #lista-container {
+        display: none;
+    }
+     
+    .form-section h2{
+        max-width: 600px;
+        margin: 0 auto;
+        color: #444;
+        margin-bottom: 20px;
+    }
+
+    .cadastrar-campo{
+        border: 1px solid #d1d1d1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 30px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .campo-container{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        
+    }
+
+    .campo-container input{
+        width: 100%;
+        height: 35px;
+        border: solid 1px #CCCCCC;
+        padding: 0px 10px;
+        font-size: 16px;
+
+    }
+
+    .campo-container select{
+        width: 100%;
+        height: 35px;
+        border: solid 1px #CCCCCC;
+        font-size: 16px;
+        padding: 0px 10px;
+    }
 
    
+
+    .lista-container .campo-container div{
+        display: flex;
+
+    }
+
+    .lista-container .campo-container button{
+        width: 148px;
+        font-size: 15px;
+        background: #0094E1;
+        border: none;
+        color: #fff;
+        
+    }
     
+    .lista-container:has(li) .opcao-title{
+        display: block;
+    }
+
+    .opcao-title{
+        margin: 10px 0px;
+        display: none;
+    }
+
   
 
-   <div class="container">
-         
-       <form action="add.php" class="cadastrar-campo" method="post">
-           <input type="hidden" name="acao">
+    #lista li{
+        display: flex;
+        border: solid 1px #CCCCCC;
+        height: 35px;
+        padding-left:10px ;
+        margin-top: 10px;
+      
+    }
 
-           
-           <label for="">Nome do campo</label>
-           <input type="text" name="name" required>
-           
-
-           <div>
-                <label>
-                    <p>Texto Curto</p>
-                    <input type="radio" name="tipo" value="input" required>
-                    <img src="./txt-icone.png" alt="Option 1">
-                </label>
-
-                <label>
-                    <p>Texto Longo</p>
-                    <input type="radio" name="tipo" value="textarea" >
-                    <img src="./txt-icone.png" alt="Option 2">
-                </label>
-                
-           </div>
-           
-          
-        <button>Salvar</button>
-              
-       </form>
-
-   </div>
-
-
-
-   <div class="container">
-         
-       <form action="add.php" class="cadastrar-campo" method="post">
-           <input type="hidden" name="acao">
-
-           
-           <label for="">Nome do campo</label>
-           <input type="text" name="name" required>
-           
-
-
-           <label for="">Selecione o Tipo</label>
-
-           <select name="" id="">
-             <option value="">Campo Texto Simples</option>
-             <option value="">Campo para texto longo</option>
-             <option value="">Lista de opções</option>
-             
-           </select>
-
-           <div class="list-option-container">
-                
-                <div class="opcao">
-                    <label for="">Adicionar opção</label>
-                    <input type="text" id="opcao-value" name="opcao" required>
-                    <button type="button" id="add-opcao">Adicionar</button>
-                </div>
-               
-                
-                
-
-           </div>
-           
-
-           <script>
-            //  var listaOpcao =[];
-            
-
-            //  document.querySelector('#add-opcao').addEventListener('click', function(){
-                  
-            //     document.querySelector('.opcao').value;
-
-
-            //  })
-
-
-             document.querySelector('#add-opcao').addEventListener('click', function(){
-                
-                var num= document.querySelector('#opcao-value' ).value;
-                  
-               
-                var listaOpcao =[];
-                
-                 listaOpcao
-
-                
-
-
-             })
-
-            
-
-             
-
-             
-
-           </script>
-           
-          
-        <button>Salvar</button>
-              
-       </form>
-
-   </div>
-
-
-
-
-
-    <style>
-        .container{
-            border:1px solid red;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .container form{
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            padding: 20px;
-        }
-
-
-        .cadastrar-campo  input:checked {
-            background: blue;
-
-            
-        }
-
-        /* HIDE RADIO */
-        [type=radio] { 
-        position: absolute;
-        opacity: 0;
-        width: 0;
-        height: 0;
-        }
-
-        /* IMAGE STYLES */
-        [type=radio] + img {
-        cursor: pointer;
-        }
-
-        /* CHECKED STYLES */
-        [type=radio]:checked + img {
-            outline: 2px solid #f00;
-        
-        }
+    #lista li p{
+        display: flex;
+        align-items: center;
+    }
     
-    </style>
+    #lista  li > button{
+      width: 62.5px;
+    }
+
+    #lista  li > button:nth-child(2){
+        margin: 0px 0px 0px auto;
+    }
+
+    #lista  li:has(input){
+        padding-left: 0px;
+    }
+
+    #lista  li input{
+        width: 100%;
+        padding: 10px;
+        font-size: 16px;
+    }
+    
+    .btn-salvar{
+        width: 150px;
+        height: 40px;
+        margin: 0 auto;
+        background: #1C813C;
+        border: none;
+        color: #fff;
+        border-radius: 3px;
+        font-size: 16px;
+    }
+
+</style>
 </body>
 </html>
