@@ -9,6 +9,8 @@ $id = $_GET['id'];
 
  
 if(isset($_POST['acao'])){
+
+    $id_form= $_POST['id'];
     $name = $_POST['name'];
     $tipo = $_POST['tipo'];
 
@@ -20,45 +22,13 @@ if(isset($_POST['acao'])){
 
 
     // Insira o campo na tabela "campo"
-    $sql_campo = "UPDATE `formcampos` SET `name`='$name',`tipo`='$tipo'  WHERE id = $id" ;
+    $sql_campo = "UPDATE `formcampos` SET `name`='$name',`tipo`='$tipo'  WHERE id = $id_form" ;
+
+    $atualizar= mysqli_query($conexao, $sql_campo); 
 
     
 
-    if ($inserir_campo = mysqli_query($conexao, $sql_campo)) {
-        echo "Campo criado com sucesso: $name<br>";
-
-        // Obtém o ID do campo recém-inserido
-        $id_campo = $conexao->insert_id;
-
-        // Insira as opções na tabela "opcoes" associadas ao campo
-
-          
-        if (is_array($array_lista )) {
-            foreach ($array_lista  as $item) {
-                $sql_opcao = " UPDATE `opcaocampo` SET `nome_opcao`='nome_opcao'  WHERE id_formcampo = $id" ;
-    
-                if ($inserir_opcao = mysqli_query($conexao, $sql_opcao)) {
-                    // Sucesso na inserção da opção
-                } else {
-                    echo "Erro ao inserir opção: " . $conexao->error . "<br>";
-                }
-            }
-        } else {
-            // Trate o caso em que $lista não é um array
-            echo "A variável \$lista não é um array.";
-        }
-
-        header("Location: ./index.php");
-        
-    } else {
-        echo "Erro ao criar campo: " . $conexao->error . "<br>";
-    }
-
-    // Feche a conexão com o banco de dados quando terminar
-    $conexao->close();
-
-
-    $lista = $_POST['itens'];
+    header("Location: ./index.php");
 
   
     
@@ -125,7 +95,7 @@ if(isset($_POST['acao'])){
 
 
         <input type="hidden" name="acao">
-
+        <input type="hidden" class="form-control" name="id"  value= "<?php echo $id ?>">
 
         <div class="campo-container">
         <label for="name">Nome do campo</label>
@@ -160,19 +130,17 @@ if(isset($_POST['acao'])){
             <ul  id="lista">
 
             <?php
-                    $sqlOpcaocampo = "SELECT * FROM `opcaocampo` WHERE id_formcampo = $id";
-                    $editOpcaocampo = mysqli_query($conexao, $sqlOpcaocampo);
+            $sqlOpcaocampo = "SELECT * FROM `opcaocampo` WHERE id_formcampo = $id";
+            $editOpcaocampo = mysqli_query($conexao, $sqlOpcaocampo);
 
-                    while ($option_array = mysqli_fetch_array($editOpcaocampo)) {
-                        $id_op = $option_array['id'];
-                        $nome_opcao = $option_array['nome_opcao'];
+            if (mysqli_num_rows($editOpcaocampo) > 0) {
+                while ($option_array = mysqli_fetch_array($editOpcaocampo)) {
+                    $id_op = $option_array['id'];
+                    $nome_opcao = $option_array['nome_opcao'];
 
-                        echo "<li><p>$nome_opcao</p> <button type='button' >Editar</button> <button type='button' >Remover</button></li>";
-
-                    }
-
-                    
-
+                    echo "<li><p>$nome_opcao</p> <button type='button' >Editar</button> <button type='button' >Remover</button></li>";
+                }
+            }
             ?>
             
             </ul>
@@ -401,6 +369,9 @@ if(isset($_POST['acao'])){
         color: #fff;
         
     }
+
+
+   
     
     .lista-container:has(li) .opcao-title{
         display: block;
