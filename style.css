@@ -1,9 +1,11 @@
 
+
 *{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'arial', sans-serif;
+    
 }
 
 #lista-container{
@@ -70,19 +72,41 @@ body{
     justify-content: space-between;
     background: #F7F7F7;
     margin-top: 50px;
-        
-    }
+    padding-left: 15px;
+    
+}
+
+.add-campo-container button{
+    background: #0094E1;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+}
+
+
+.title-form{
+    color: #555555;
+}
 
     
-    .menu-campo{
+.menu-campo{
     display: flex;
     justify-content: end;
-    }
+}
 
-    .menu-campo button{
+.menu-campo button{
     padding: 10px;
 
-    }
+}
+
+
+#formulario label{
+    font-weight: bold;
+    color: #555555;
+}
+
+
 
 
 /* modal adicionar */
@@ -227,8 +251,38 @@ color: #fff;
     font-size: 16px;
     border-radius: 3px;
     margin-top: 60px;
-    margin: 0 auto;
+    margin: 60px auto 0px;
 
 }
 
 
+
+.form-vazio{
+    height: 200px;
+    border: 2px solid #cccccc;
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+}
+
+
+.form-vazio p{
+    font-size: 18px;
+    max-width: 500px;
+    text-align: center;
+    line-height: 2;
+    color: #555555;
+
+}
+
+#formulario:not(:has(.novo-campo)) .form-vazio  {
+    display: flex;
+}
+
+.form-vazio {
+    display: none;
+}

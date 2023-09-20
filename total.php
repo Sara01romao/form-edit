@@ -2,28 +2,101 @@
 include './conexao.php';
 
 
-if (isset($_POST['acao'])) {
 
-    // Receba os dados enviados via POST
-    $dadosCompletosJSON = $_POST['dadosCompletos'];
 
-    // Decodifique o JSON para obter os dados em um array associativo
-    $dadosCompletos = json_decode($dadosCompletosJSON, true);
+    if (isset($_POST['dadosCompletos'])) {
+        // Receba os dados enviados via POST
+        $dadosCompletosJSON = $_POST['dadosCompletos'];
     
-  // Insira o nome do formulário na tabela "formulario"
-  $nomeFormulario = $dadosCompletos['nomeFormulario'];
-  //$sql = "INSERT INTO formulario (nome) VALUES ('$nomeFormulario')";
+        // Decodifique o JSON para obter os dados em um array associativo
+        $dadosCompletos = json_decode($dadosCompletosJSON, true);
+
+
+        $nomeFormularioValue = $_POST['nomeFormulario'];
+
+        $nome_form = "INSERT INTO `formulario` (nome) VALUES ('$nomeFormularioValue')";
+        $inserir_formulario = mysqli_query($conexao, $nome_form );
   
- echo $dadosCompletos;
 
-     
+        echo $nomeFormularioValue;
+        //var_dump($dadosCompletos);
+    
+        // Acesse os dados dos campos de texto e textarea
+        $camposData = $dadosCompletos['camposData'];
+        //var_dump($camposData );
+          
+        $formulario_id = $conexao->insert_id;
 
-      // Redirecione ou exiba uma mensagem de sucesso, etc.
+        foreach ($camposData as $campo) {
+            $tipo = $campo['type'];
+            $nome = $campo['name'];
+
+            
+    
+          
+            // Verifique se o nome do campo não é "nomeFormulario"
+            if ($nome !== "nomeFormulario") {
+                // Exemplo de inserção em banco de dados para campos de texto
+                $sql_campo = "INSERT INTO `campo` (nome, tipo, formulario_id) VALUES ('$nome', '$tipo', '$formulario_id')";
+                $inserir_campo = mysqli_query($conexao, $sql_campo);
+            }
+        }
+    
+        // Acesse os dados dos campos <select> se estiverem presentes
+        if (isset($dadosCompletos['selectData'])) {
+            $selectData = $dadosCompletos['selectData'];
+            var_dump($selectData);
+
+
+            foreach ($selectData as $select) {
+                $nomeSelect = $select['name'];
+                $valoresSelect = $select['optionValues'];
+        
+                // Defina o tipo como "select"
+                $tipo = "select";
+        
+                // Insira os dados do campo <select> na tabela "campo" com um formulario_id associado
+                $sqlCampo = "INSERT INTO `campo` (`nome`, `tipo`, `formulario_id`) VALUES ('$nomeSelect', '$tipo', '$formulario_id')";
+                $inserir_campo = mysqli_query($conexao, $sqlCampo);
+        
+                if ($inserir_campo) {
+                    $campo_id = mysqli_insert_id($conexao); // Obtém o ID gerado para o campo <select>
+                    // echo "Inserção bem-sucedida na tabela 'campo' para o campo '<select>' com ID: $campo_id<br>";
+        
+                    // Agora, insira as opções do campo <select> na tabela "opcao" com o campo_id associado
+                    foreach ($valoresSelect as $valorSelect) {
+                        if (!empty($valorSelect)) {
+                            $sqlOpcao = "INSERT INTO `opcoes` (`valor`, `campo_id`) VALUES ('$valorSelect', '$campo_id')";
+                            $inserir_opcao = mysqli_query($conexao, $sqlOpcao);
+                        
+                        }
+                    }
+                } 
+            }
+        }
+        
+        
+        
+        
+        
+        
+        
+    
+        // Redirecione ou exiba uma mensagem de sucesso, etc.
+    }
+    
+  
+  
+  
+  
+  
+  
+
       
   
 
 
-}
+
 
 ?>
 
@@ -34,6 +107,8 @@ if (isset($_POST['acao'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <link rel="stylesheet" href="style.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <title>Document</title>
 </head>
 <body>
@@ -44,8 +119,8 @@ if (isset($_POST['acao'])) {
 
       <form action="total.php" id="formulario" method="POST">
           <div class="campo-container">
-              <label for="name">Nome =</label>
-              <input type="text" name="nomeFomulario" required>
+              <label for="name">Título do Formulário</label>
+              <input type="text" name="nomeFormulario" required>
           </div>
 
           <div class="add-campo-container">
@@ -54,11 +129,15 @@ if (isset($_POST['acao'])) {
                   <button type="button" id="open-modal-campo" onclick="openModalCampo()">+ Adicionar Campo</button>
               </div>
           </div>
-
+          
+          <div class="form-vazio">
+             <p>Seu formulário está vazio. Clique no botão 'Adicionar Campo' para começar a criar seu formulário.</p>
+               
+          </div>
         
           
 
-        <div class="campo-container">
+        <!-- <div class="campo-container">
             <div><button type="button">Editar</button><button type="button">Remover</button>
             </div>
             <label for="nome">nome:</label>
@@ -71,6 +150,13 @@ if (isset($_POST['acao'])) {
                 </div>
                 <label for="mensagem">mensagem:</label>
                 <textarea id="mensagem" name="mensagem" required=""> </textarea>
+        </div> -->
+
+
+        <div class="campo-container novo-campo"><div>
+        <button type="button"><i class="fa fa-edit"></i> Editar</button>
+        <button type="button"><i class="fa fa-trash-alt"></i> Remover</button>
+              </div><label for="dsada">dsada:</label><select id="dsada" name="dsada"><option value="">Selecionar</option><option value="dasda">dasda</option></select>
         </div>
          
 
@@ -242,7 +328,7 @@ if (isset($_POST['acao'])) {
 
         // Crie um novo elemento div com a classe "campo-container"
         var novoCampo = document.createElement('div');
-        novoCampo.className = 'campo-container';
+        novoCampo.className = 'campo-container novo-campo';
 
 
 
@@ -278,10 +364,14 @@ if (isset($_POST['acao'])) {
             }else if (tipo_campo === "select") {
                 // Crie um novo elemento <div> com os botões "Editar" e "Remover"
                 var divBotoes = document.createElement('div');
+                
                 divBotoes.innerHTML = `
-                    <button type="button">Editar</button>
-                    <button type="button">Remover</button>
+                    <button type="button"><i class="fa fa-edit"></i> Editar</button>
+                    <button type="button"><i class="fa fa-trash-alt"></i> Remover</button>
                 `;
+
+
+
 
                 // Crie um novo elemento <label>
                 var labelCampo = document.createElement('label');
@@ -335,50 +425,67 @@ if (isset($_POST['acao'])) {
 
 
 function coletarCampos() {
-            const formulario = document.getElementById('formulario');
-            const campos = formulario.querySelectorAll('input[type="text"], textarea');
-            const selects = formulario.querySelectorAll('.campo-container select');
+    const formulario = document.getElementById('formulario');
+    const campos = formulario.querySelectorAll('input[type="text"], textarea');
+    const selects = formulario.querySelectorAll('.campo-container select');
 
-            const camposData = [];
-            const selectData = [];
+    const camposData = [];
+    const selectData = [];
 
-            campos.forEach(function (campo) {
-                camposData.push({
-                    type: campo.type,
-                    name: campo.name
-                });
+    campos.forEach(function (campo) {
+        if (campo.name === 'nomeFormulario') {
+            // Se o campo for o primeiro input com name 'nomeFormulario', pegue seu valor
+            camposData.push({
+                type: campo.type,
+                name: campo.name,
+                value: campo.value // Adicione o valor do campo
             });
-
-            selects.forEach(function (select) {
-                const selectValues = [];
-                const selectName = select.name;
-                for (let i = 0; i < select.options.length; i++) {
-                    selectValues.push(select.options[i].value);
-                }
-                selectData.push({
-                    name: selectName,
-                    optionValues: selectValues
-                });
+        } else {
+            camposData.push({
+                type: campo.type,
+                name: campo.name
             });
-
-            const dadosCompletos = {
-                camposData: camposData,
-                selectData: selectData
-            };
-
-            
-
-            // Agora você pode enviar os dados para o PHP usando AJAX ou definir um campo oculto no formulário e definir seu valor para dadosCompletos.
-            const dadosCompletosInput = document.createElement('input');
-            dadosCompletosInput.type = 'hidden';
-            dadosCompletosInput.name = 'dadosCompletos';
-            dadosCompletosInput.value = JSON.stringify(dadosCompletos);
-            formulario.appendChild(dadosCompletosInput);
-
-            // Agora você pode enviar o formulário
-            formulario.submit();
-           
         }
+    });
+
+    selects.forEach(function (select) {
+        const selectValues = [];
+        const selectName = select.name;
+        for (let i = 0; i < select.options.length; i++) {
+            selectValues.push(select.options[i].value);
+        }
+        selectData.push({
+            name: selectName,
+            optionValues: selectValues
+        });
+    });
+
+    const dadosCompletos = {
+        camposData: camposData,
+        selectData: selectData
+    };
+
+    // Verifique se há campos <select> no formulário
+    if (selectData.length > 0) {
+        // Campos <select> estão presentes, você pode fazer algo com eles aqui
+        console.log('Campos <select> estão presentes:', selectData);
+    } else {
+        // Nenhum campo <select> encontrado, você pode lidar com isso aqui
+        console.log('Nenhum campo <select> encontrado.');
+    }
+
+    // Agora você pode enviar os dados para o PHP usando AJAX ou definir um campo oculto no formulário e definir seu valor para dadosCompletos.
+    const dadosCompletosInput = document.createElement('input');
+    dadosCompletosInput.type = 'hidden';
+    dadosCompletosInput.name = 'dadosCompletos';
+    dadosCompletosInput.value = JSON.stringify(dadosCompletos);
+    formulario.appendChild(dadosCompletosInput);
+
+    // Agora você pode enviar o formulário
+    formulario.submit();
+}
+
+
 
 
 </script>  
