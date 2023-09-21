@@ -281,8 +281,8 @@ include './conexao.php';
         novoItem.innerHTML = `
             <input type="text" value="${nomeCampo}" disabled="disabled" name="option">
             <div>
-                <button type="button" onclick="editarItem(this)">Editar</button>
-                <button type="button" onclick="removerItem(this)">Remover</button>
+                <button type="button" class="edit-opcao" onclick="editarItem(this)"><i class="fa fa-edit"></i></button>
+                <button type="button" class="remover-opcao" onclick="removerItem(this)"><i class="fa fa-xmark"></i></button>
             </div>
         `;
 
@@ -296,19 +296,21 @@ include './conexao.php';
 
 
     function editarItem(botaoEditar) {
-          var li = botaoEditar.parentElement.parentElement;
-          var input = li.querySelector('input');
-          var button = botaoEditar;
+    var li = botaoEditar.parentElement.parentElement;
+    var input = li.querySelector('input');
+    var button = botaoEditar;
 
-          if (button.textContent === "Editar") {
-              button.textContent = "Salvar";
-              input.removeAttribute('disabled');
-              input.focus();
-          } else {
-              button.textContent = "Editar";
-              input.setAttribute('disabled', 'disabled');
-          }
+    if (button.textContent === "") {
+        button.style.color="#555555";
+        button.textContent = "Salvar"; // Adiciona o ícone para "Salvar"
+        input.removeAttribute('disabled');
+        input.focus();
+    } else {
+        button.innerHTML = '<i class="fas fa-edit"></i>'; // Adiciona o ícone para "Editar"
+        button.style.color="#44BA5B";
+        input.setAttribute('disabled', 'disabled');
     }
+}
 
 
     function removerItem(botaoRemover) {
@@ -364,6 +366,16 @@ include './conexao.php';
             }else if (tipo_campo === "select") {
                 // Crie um novo elemento <div> com os botões "Editar" e "Remover"
                 var divBotoes = document.createElement('div');
+
+
+                var lista = document.getElementById('lista');
+
+                if (lista.children.length === 0) {
+                    // Se a lista estiver vazia, coloque o foco no campo para adicionar opções
+                    alert('A lista está vazia. Adicione opções antes de salvar.');
+                    document.getElementById('optionCampo').focus();
+                    return; // Saia da função para não criar o campo vazio
+                }
                 
                 divBotoes.innerHTML = `
                     <button type="button"><i class="fa fa-edit"></i> Editar</button>

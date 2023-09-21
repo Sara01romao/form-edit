@@ -213,6 +213,9 @@ color: #fff;
 
 #lista li div{
     display: flex;
+    gap: 5px;
+    
+    
 }
 
 
@@ -220,8 +223,30 @@ color: #fff;
     display: inline-block;
     width: 55px;
     height: 35px;
+    transition: 0.5s;
+    cursor: pointer;
+    background: none;
+    border: solid 1px #CCCCCC;
+    background: #f7f7f7;
 
 }
+
+#lista li button:hover{
+    background: #dfdfdf;
+    transition: 0.5s;
+}
+
+.edit-opcao{
+    font-size: 16px;
+    color: #44BA5B;
+}
+
+.remover-opcao{
+    font-size: 20px;
+    color: #DC3545;
+}
+
+
 
 #lista li input[type="text"]:disabled{
     background-color: rgb(247, 247, 247);
