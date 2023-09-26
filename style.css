@@ -65,6 +65,11 @@ body{
     padding: 0px 10px;
 }
 
+.msg-erro{
+    color: red;
+    display: none;
+}
+
 
 .add-campo-container{
     display: flex;
@@ -311,3 +316,34 @@ color: #fff;
 .form-vazio {
     display: none;
 }
+
+
+
+.novo-campo div{
+    display: flex;
+    gap: 10px;
+    margin: 0px 0px 0px auto;
+}
+
+.novo-campo div button{
+    width: 35px;
+    height: 35px;
+    border: none;
+    transition: 0.8s;
+    cursor: pointer;
+}
+
+.novo-campo div button:nth-child(1){
+    color: #1c813c;
+}
+.novo-campo div button:nth-child(2){
+    color: red;
+}
+
+.novo-campo div button:hover{
+    background-color:#c9c9c9;
+    transition: 0.8s;
+}
+
+
+
