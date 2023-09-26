@@ -154,8 +154,8 @@ include './conexao.php';
 
 
         <div class="campo-container novo-campo"><div>
-        <button type="button"><i class="fa fa-edit"></i> Editar</button>
-        <button type="button"><i class="fa fa-trash-alt"></i> Remover</button>
+        <button type="button"><i class="fa fa-edit"></i></button>
+        <button type="button"><i class="fa fa-xmark"></i></button>
               </div><label for="dsada">dsada:</label><select id="dsada" name="dsada"><option value="">Selecionar</option><option value="dasda">dasda</option></select>
         </div>
          
@@ -203,6 +203,7 @@ include './conexao.php';
                           <input type="text" id="optionCampo" placeholder="Digite um item">
                           <button type="button" onclick="adicionarItem()">Adicionar</button>
                       </div>
+                      <small class="msg-erro">Preencha o opção</small>
                   </div>
                   
                   <div class="lista-container">
@@ -286,6 +287,10 @@ include './conexao.php';
             </div>
         `;
 
+       
+        document.querySelector('.msg-erro').style.display='none';
+        
+
         // Adicione o novo item à lista
         lista.appendChild(novoItem);
         document.getElementById('optionCampo').value = '';
@@ -339,7 +344,9 @@ include './conexao.php';
             if (tipo_campo === "input") {
 
                 novoCampo.innerHTML = `
-                    <div><button type="button">Editar</button><button type="button">Remover</button>
+                    <div>
+                        <button type="button" class="editar-novo-campo" onclick="editarCampo(this)"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="remover-novo-campo" onclick="removerCampo(this)"><i class="fa fa-xmark"></i></button>
                     </div>
                     <label for="${nome_campo}">${nome_campo}:</label>
                     <input type="text" id="${nome_campo}" name="${nome_campo}" required>
@@ -354,11 +361,12 @@ include './conexao.php';
                 
 
                 novoCampo.innerHTML = `
-                    <div><button type="button">Editar</button><button type="button">Remover</button>
+                    <div>
+                        <button type="button" class="editar-novo-campo" onclick="editarCampo(this)"><i class="fa fa-edit"></i></button>
+                        <button type="button" class="remover-novo-campo" onclick="removerCampo(this)"><i class="fa fa-xmark"></i></button>
                     </div>
                     <label for="${nome_campo}">${nome_campo}:</label>
-                    <textarea  id="${nome_campo}" name="${nome_campo}" required> 
-
+                    <textarea id="${nome_campo}" name="${nome_campo}" required></textarea>
                 `;
 
                 formulario.appendChild(novoCampo);
@@ -373,16 +381,15 @@ include './conexao.php';
                 if (lista.children.length === 0) {
                     // Se a lista estiver vazia, coloque o foco no campo para adicionar opções
                     alert('A lista está vazia. Adicione opções antes de salvar.');
+                    document.querySelector('.msg-erro').style.display='block';
                     document.getElementById('optionCampo').focus();
                     return; // Saia da função para não criar o campo vazio
                 }
                 
                 divBotoes.innerHTML = `
-                    <button type="button"><i class="fa fa-edit"></i> Editar</button>
-                    <button type="button"><i class="fa fa-trash-alt"></i> Remover</button>
+                    <button type="button" class="editar-novo-campo" onclick="editarCampo(this)" ><i class="fa fa-edit"></i></button>
+                    <button type="button" class="remover-novo-campo" onclick="removerCampo(this)"><i class="fa fa-xmark"></i> </button>
                 `;
-
-
 
 
                 // Crie um novo elemento <label>
@@ -435,7 +442,7 @@ include './conexao.php';
 
 
 
-
+//coleta os campos para enviar para php
 function coletarCampos() {
     const formulario = document.getElementById('formulario');
     const campos = formulario.querySelectorAll('input[type="text"], textarea');
@@ -500,7 +507,27 @@ function coletarCampos() {
 
 
 
+
+
+
+// Função para remover o campo quando o botão "Remover" é clicado
+function removerCampo(button) {
+    const campoContainer = button.closest(".campo-container");
+    campoContainer.remove();
+}
+
+
+
+
+
+
+
+
+
 </script>  
+
+
+
 
 
 
