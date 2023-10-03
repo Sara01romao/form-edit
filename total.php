@@ -221,11 +221,15 @@ include './conexao.php';
               
               
               <button class="btn-salvar" type="button" id="add-campo" onclick="salvarCampo()" >Salvar</button>
+
                   
           </form>
         </div>
    </div>
 
+
+
+   
 
   
 
@@ -301,21 +305,21 @@ include './conexao.php';
 
 
     function editarItem(botaoEditar) {
-    var li = botaoEditar.parentElement.parentElement;
-    var input = li.querySelector('input');
-    var button = botaoEditar;
+        var li = botaoEditar.parentElement.parentElement;
+        var input = li.querySelector('input');
+        var button = botaoEditar;
 
-    if (button.textContent === "") {
-        button.style.color="#555555";
-        button.textContent = "Salvar"; // Adiciona o ícone para "Salvar"
-        input.removeAttribute('disabled');
-        input.focus();
-    } else {
-        button.innerHTML = '<i class="fas fa-edit"></i>'; // Adiciona o ícone para "Editar"
-        button.style.color="#44BA5B";
-        input.setAttribute('disabled', 'disabled');
+        if (button.textContent === "") {
+            button.style.color="#555555";
+            button.textContent = "Salvar"; // Adiciona o ícone para "Salvar"
+            input.removeAttribute('disabled');
+            input.focus();
+        } else {
+            button.innerHTML = '<i class="fas fa-edit"></i>'; // Adiciona o ícone para "Editar"
+            button.style.color="#44BA5B";
+            input.setAttribute('disabled', 'disabled');
+        }
     }
-}
 
 
     function removerItem(botaoRemover) {
@@ -333,9 +337,15 @@ include './conexao.php';
         var tipo_campo = document.getElementById('tipoCampo').value;
         var formulario = document.getElementById('formulario');
 
+
+        // Crie um novo ID único para o campo
+        var campoId = "campo_" + Date.now();
+
         // Crie um novo elemento div com a classe "campo-container"
         var novoCampo = document.createElement('div');
         novoCampo.className = 'campo-container novo-campo';
+
+        novoCampo.setAttribute("data-campo-id", campoId);
 
 
 
@@ -348,7 +358,7 @@ include './conexao.php';
                         <button type="button" class="editar-novo-campo" onclick="editarCampo(this)"><i class="fa fa-edit"></i></button>
                         <button type="button" class="remover-novo-campo" onclick="removerCampo(this)"><i class="fa fa-xmark"></i></button>
                     </div>
-                    <label for="${nome_campo}">${nome_campo}:</label>
+                    <label for="${nome_campo}">${nome_campo}</label>
                     <input type="text" id="${nome_campo}" name="${nome_campo}" required>
 
                 `;
@@ -365,7 +375,7 @@ include './conexao.php';
                         <button type="button" class="editar-novo-campo" onclick="editarCampo(this)"><i class="fa fa-edit"></i></button>
                         <button type="button" class="remover-novo-campo" onclick="removerCampo(this)"><i class="fa fa-xmark"></i></button>
                     </div>
-                    <label for="${nome_campo}">${nome_campo}:</label>
+                    <label for="${nome_campo}">${nome_campo}</label>
                     <textarea id="${nome_campo}" name="${nome_campo}" required></textarea>
                 `;
 
@@ -395,7 +405,7 @@ include './conexao.php';
                 // Crie um novo elemento <label>
                 var labelCampo = document.createElement('label');
                 labelCampo.setAttribute('for', nome_campo);
-                labelCampo.textContent = nome_campo + ":";
+                labelCampo.textContent = nome_campo ;
 
                 // Crie um novo elemento <select>
                 var novoSelect = document.createElement('select');
@@ -519,13 +529,135 @@ function removerCampo(button) {
 
 
 
+function editarCampo(button) {
+    const campoContainer = button.closest(".campo-container");
+    const campoAtual = campoContainer.querySelector("input[type='text'], textarea, select");
+     
+    if (!campoAtual) {
+        console.error("Campo não encontrado no contêiner.");
+        return;
+    }
+
+    const tipoCampo = campoAtual.tagName.toLowerCase();
+
+    // Defina o tipo do campo no modal
+    document.getElementById("tipoCampo").value = tipoCampo;
+
+    // Preencha os campos de edição com os valores atuais
+    const nomeCampo = campoContainer.querySelector("label").textContent;
+    document.getElementById("nameCampo").value = nomeCampo;
+
+    // Se o tipo for "select", preencha a lista de opções no modal
+    if (tipoCampo === "select") {
+        const lista = document.getElementById("lista");
+        lista.innerHTML = ""; // Limpe a lista atual
+
+        // Preencha a lista de opções com as opções atuais do campo "select"
+        const tipoCampoSelect = campoAtual;
+        for (let i = 0; i < tipoCampoSelect.options.length; i++) {
+            const optionValue = tipoCampoSelect.options[i].value;
+            adicionarItem(optionValue); // Chame a função adicionarItem para cada opção
+        }
+    }
+
+    // Atualize o botão "Salvar" do modal para chamar a função atualizarCampo existente
+    const botaoSalvar = document.getElementById("add-campo");
+    botaoSalvar.textContent = "Atualizar";
+    botaoSalvar.onclick = function() {
+        atualizarCampo(campoContainer);
+        closeModalCampo();
+
+          // Após a atualização, redefina o botão para "Salvar"
+        botaoSalvar.textContent = "Salvar";
+        botaoSalvar.onclick = function() {
+            salvarCampo();
+        };
+
+        
+    };
+
+    // Exiba o modal de edição
+    openModalCampo();
+}
+
+
+
+function atualizarCampo(campoContainer) {
+    const nomeCampoAtualizado = document.getElementById("nameCampo").value;
+    const tipoCampoAtualizado = document.getElementById("tipoCampo").value;
+
+    // Atualize o nome do campo no label
+    campoContainer.querySelector("label").textContent = nomeCampoAtualizado;
+
+    // Atualize o tipo do campo
+    if (tipoCampoAtualizado === "input") {
+        // Se o tipo for "input", atualize o campo para um input
+        campoContainer.innerHTML = `
+            <div>
+                <button type="button" class="editar-novo-campo" onclick="editarCampo(this)"><i class="fa fa-edit"></i></button>
+                <button type="button" class="remover-novo-campo" onclick="removerCampo(this)"><i class="fa fa-xmark"></i></button>
+            </div>
+            <label for="${nomeCampoAtualizado}">${nomeCampoAtualizado}:</label>
+            <input type="text" id="${nomeCampoAtualizado}" name="${nomeCampoAtualizado}" required>
+        `;
+    } else if (tipoCampoAtualizado === "textarea") {
+        // Se o tipo for "textarea", atualize o campo para um textarea
+        campoContainer.innerHTML = `
+            <div>
+                <button type="button" class="editar-novo-campo" onclick="editarCampo(this)"><i class="fa fa-edit"></i></button>
+                <button type="button" class="remover-novo-campo" onclick="removerCampo(this)"><i class="fa fa-xmark"></i></button>
+            </div>
+            <label for="${nomeCampoAtualizado}">${nomeCampoAtualizado}:</label>
+            <textarea id="${nomeCampoAtualizado}" name="${nomeCampoAtualizado}" required></textarea>
+        `;
+    } else if (tipoCampoAtualizado === "select") {
+        // Se o tipo for "select", atualize o campo para um select
+        campoContainer.innerHTML = `
+            <div>
+                <button type="button" class="editar-novo-campo" onclick="editarCampo(this)"><i class="fa fa-edit"></i></button>
+                <button type="button" class="remover-novo-campo" onclick="removerCampo(this)"><i class="fa fa-xmark"></i></button>
+            </div>
+            <label for="${nomeCampoAtualizado}">${nomeCampoAtualizado}:</label>
+            <select id="${nomeCampoAtualizado}" name="${nomeCampoAtualizado}">
+                <option value="">Selecionar</option>
+            </select>
+        `;
+
+        // Preencha o novo select com as opções atuais
+        const lista = campoContainer.querySelector("select");
+        const opcoesAtuais = document.getElementById("lista").getElementsByTagName("input");
+        for (let i = 0; i < opcoesAtuais.length; i++) {
+            const optionValue = opcoesAtuais[i].value;
+            const novaOpcao = document.createElement("option");
+            novaOpcao.value = optionValue;
+            novaOpcao.text = optionValue;
+            lista.appendChild(novaOpcao);
+        }
+    }
+
+    limparCampos();
+            
+}
 
 
 
 
 
-</script>  
+function limparCampos() {
+    // Limpa o campo de nome
+    document.getElementById("nameCampo").value = "";
 
+    // Limpa o campo de tipo
+    document.getElementById("tipoCampo").value = "";
+
+    // Limpa a lista de opções
+    document.getElementById("lista").innerHTML = "";
+
+    // Limpa o campo de nova opção
+    document.getElementById("optionCampo").value = "";
+}
+
+</script>
 
 
 
