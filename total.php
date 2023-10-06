@@ -229,6 +229,66 @@ include './conexao.php';
 
 
 
+   <div class="modal-edit-container">
+      <div class="modal">
+        <button id="close-modal" onclick="closeModalEditar()">x</button>
+        <form  class="cadastrar-campo" >
+             
+
+
+              <div class="campo-container">
+                <label for="name">Nome do campo</label>
+                <input type="text" name="name" id="edit-nameCampo" required >
+              </div>
+              
+              
+              <div class="campo-container">
+                  <label for="tipo">Tipo do campo</label>
+                  <select name="tipo" id="edit-tipoCampo" onchange="mostrarLista()" required>
+                      <option value="">Selecionar</option>
+                      <option value="input">Campo Simples</option>
+                      <option value="textarea">Texto Longo</option>
+                      <option value="select">Lista com Itens</option>
+                  </select>
+
+              </div>
+              
+        
+              <div class="lista-container" id="lista-container">
+                  <div class="campo-container">
+                      <!-- Campo de entrada e botão de adição -->
+                      <label for="tipo">Adicionar Opções</label>
+                      
+                      <div>
+                          <input type="text" id="optionCampo" placeholder="Digite um item">
+                          <button type="button" onclick="adicionarItem()">Adicionar</button>
+                      </div>
+                      <small class="msg-erro">Preencha o opção</small>
+                  </div>
+                  
+                  <div class="edit-lista-container">
+                      <p class="edit-opcao-title">Opções</p>
+                      <ul  id="edit-lista">
+                       
+                      </ul>
+                  </div>
+              
+              </div>
+              
+              
+
+              
+              
+              
+              <button class="btn-salvar" type="button" id="salvar-edit-campo" onclick="editarCampo()" >Editar</button>
+
+                  
+          </form>
+        </div>
+   </div>
+
+
+
    
 
   
@@ -529,7 +589,7 @@ function removerCampo(button) {
 
 
 
-function editarCampo(button) {
+/*function editarCampo(button) {
     const campoContainer = button.closest(".campo-container");
     const campoAtual = campoContainer.querySelector("input[type='text'], textarea, select");
      
@@ -578,7 +638,7 @@ function editarCampo(button) {
 
     // Exiba o modal de edição
     openModalCampo();
-}
+}*/
 
 
 
@@ -656,6 +716,142 @@ function limparCampos() {
     // Limpa o campo de nova opção
     document.getElementById("optionCampo").value = "";
 }
+
+
+
+
+
+
+
+function openModalEditar() {
+    const modalEditar = document.querySelector('.modal-edit-container');
+    modalEditar.classList.add('active-modal-edit');
+}
+
+
+function closeModalEditar() {
+    const modalEditar = document.querySelector('.modal-edit-container');
+
+    // Reset input fields to empty values
+    const inputFields = modalEditar.querySelectorAll('input');
+    inputFields.forEach((input) => {
+        input.value = '';
+    });
+
+    // Reset select dropdowns to their initial state (first option selected)
+    const selectFields = modalEditar.querySelectorAll('select');
+    selectFields.forEach((select) => {
+        select.selectedIndex = 0;
+    });
+
+    modalEditar.classList.remove('active-modal-edit'); // Hide the editing modal
+}
+
+
+
+function editarCampo(button) {
+    const campoContainer = button.closest(".campo-container");
+    const campoAtual = campoContainer.querySelector("input[type='text'], textarea, select");
+
+    if (!campoAtual) {
+        console.error("Campo não encontrado no contêiner.");
+        return;
+    }
+
+    const tipoCampo = campoAtual.tagName.toLowerCase();
+
+    // Preencha os campos de edição com os valores atuais
+    const nomeCampo = campoContainer.querySelector("label").textContent;
+
+    // Set the values in the editing modal
+    document.getElementById("tipoCampo").value = tipoCampo;
+    document.getElementById("edit-nameCampo").value = nomeCampo;
+
+
+
+
+    // If the type is "select", populate the list of options in the editing modal
+    if (tipoCampo === "select") {
+        const listaEditar = document.getElementById("listaEditar");
+        listaEditar.innerHTML = ""; // Clear the current list
+
+        // Populate the list of options with the current options from the "select" field
+        const tipoCampoSelect = campoAtual;
+        for (let i = 0; i < tipoCampoSelect.options.length; i++) {
+            const optionValue = tipoCampoSelect.options[i].value;
+            adicionarItemEditar(optionValue); // Call the function to add options for editing
+        }
+    }
+
+    // Update the "Atualizar" button in the editing modal to call the existing update function
+    const botaoAtualizar = document.getElementById("salvar-edit-campo");
+    botaoAtualizar.onclick = function () {
+        atualizarCampo(campoContainer);
+        closeModalEditar();
+    };
+
+    // Open the editing modal
+    openModalEditar();
+}
+
+
+function atualizarCampo(campoContainer) {
+    const nomeCampoAtualizado = document.getElementById("edit-nameCampo").value;
+    const tipoCampoAtualizado = document.getElementById("edit-tipoCampo").value;
+
+    // Atualize o nome do campo no label
+    campoContainer.querySelector("label").textContent = nomeCampoAtualizado;
+
+    // Atualize o tipo do campo
+    if (tipoCampoAtualizado === "input") {
+        // Se o tipo for "input", atualize o campo para um input
+        campoContainer.innerHTML = `
+            <div>
+                <button type="button" class="editar-novo-campo" onclick="editarCampo(this)"><i class="fa fa-edit"></i></button>
+                <button type="button" class="remover-novo-campo" onclick="removerCampo(this)"><i class="fa fa-xmark"></i></button>
+            </div>
+            <label for="${nomeCampoAtualizado}">${nomeCampoAtualizado}:</label>
+            <input type="text" id="${nomeCampoAtualizado}" name="${nomeCampoAtualizado}" required>
+        `;
+    } else if (tipoCampoAtualizado === "textarea") {
+        // Se o tipo for "textarea", atualize o campo para um textarea
+        campoContainer.innerHTML = `
+            <div>
+                <button type="button" class="editar-novo-campo" onclick="editarCampo(this)"><i class="fa fa-edit"></i></button>
+                <button type="button" class="remover-novo-campo" onclick="removerCampo(this)"><i class="fa fa-xmark"></i></button>
+            </div>
+            <label for="${nomeCampoAtualizado}">${nomeCampoAtualizado}:</label>
+            <textarea id="${nomeCampoAtualizado}" name="${nomeCampoAtualizado}" required></textarea>
+        `;
+    } else if (tipoCampoAtualizado === "select") {
+        // Se o tipo for "select", atualize o campo para um select
+        campoContainer.innerHTML = `
+            <div>
+                <button type="button" class="editar-novo-campo" onclick="editarCampo(this)"><i class="fa fa-edit"></i></button>
+                <button type="button" class="remover-novo-campo" onclick="removerCampo(this)"><i class="fa fa-xmark"></i></button>
+            </div>
+            <label for="${nomeCampoAtualizado}">${nomeCampoAtualizado}:</label>
+            <select id="${nomeCampoAtualizado}" name="${nomeCampoAtualizado}">
+                <option value="">Selecionar</option>
+            </select>
+        `;
+
+        // Preencha o novo select com as opções atuais
+        const lista = campoContainer.querySelector("select");
+        const opcoesAtuais = document.getElementById("lista").getElementsByTagName("input");
+        for (let i = 0; i < opcoesAtuais.length; i++) {
+            const optionValue = opcoesAtuais[i].value;
+            const novaOpcao = document.createElement("option");
+            novaOpcao.value = optionValue;
+            novaOpcao.text = optionValue;
+            lista.appendChild(novaOpcao);
+        }
+    }
+
+    limparCampos();
+            
+}
+
 
 </script>
 
