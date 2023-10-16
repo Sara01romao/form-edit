@@ -1,0 +1,253 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="stylesheet" href="style.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <title>Document</title>
+</head>
+<body>
+    
+
+    
+  <section class="form-section">
+
+      <form action="total.php" id="formulario" method="POST">
+          <div class="campo-container">
+              <label for="name">Título do Formulário</label>
+              <input type="text" name="nomeFormulario" required>
+          </div>
+
+          <div class="add-campo-container">
+              <h3 class="title-form">Campo</h3>
+              <div class="menu-campo">
+                  <button type="button" id="open-modal-campo" onclick="openModalCampo()">+ Adicionar Campo</button>
+              </div>
+          </div>
+          
+          <div class="form-vazio">
+             <p>Seu formulário está vazio. Clique no botão 'Adicionar Campo' para começar a criar seu formulário.</p>
+               
+          </div>
+
+        <div class="campo-container novo-campo"><div>
+              <button type="button"><i class="fa fa-edit"></i></button>
+              <button type="button"><i class="fa fa-xmark"></i></button>
+              </div><label for="dsada">Teste:</label><select id="dsada" name="dsada"><option value="">Selecionar</option><option value="dasda">dasda</option></select>
+        </div>
+         
+
+        <input type="hidden" name="acao">
+
+
+        <button class="btn-salvar salvar-formularia" type="button" onclick="coletarCampos()" >Salvar</button>
+      </form>
+
+  </section>
+
+   
+  <!-- modal adicionar -->
+   <div class="modal-add-container">
+      <div class="modal">
+        <button id="close-modal-criar">x</button>
+
+        <h3 class="title-modal">Criar Campo</h3>
+        
+        <form  class="cadastrar-campo" >
+
+              <div class="campo-container">
+                <label for="name">Nome do campo</label>
+                <input type="text" name="name" id="nameCampo" required >
+              </div>
+              
+              
+              <div class="campo-container">
+                  <label for="tipo">Tipo do campo</label>
+                  <select name="tipo" id="tipoCampo"  required>
+                      <option value="">Selecionar</option>
+                      <option value="input">Texto Curto</option>
+                      <option value="textarea">Texto Longo</option>
+                      <option value="select">Lista com Itens</option>
+                  </select>
+
+              </div>
+              
+        
+              <div class="lista-container" id="lista-container">
+                  <div class="campo-container">
+                      <!-- Campo de entrada e botão de adição -->
+                      <label for="tipo">Adicionar Opções</label>
+                      
+                      <div>
+                          <input type="text" id="optionCampo" placeholder="Digite um item">
+                          <button type="button" class="btn-add-option">Adicionar</button>
+                      </div>
+                      <small class="msg-erro">Preencha o opção</small>
+                  </div>
+                  
+                  <div class="lista-container">
+                      <p class="opcao-title">Opções</p>
+                      <ul  id="lista">
+                       
+                      </ul>
+                  </div>
+              
+              </div>
+              
+              
+
+              
+              
+              
+              <button class="btn-salvar" type="button" id="add-campo" onclick="salvarCampo()" >Salvar</button>
+
+                  
+          </form>
+        </div>
+   </div>
+
+
+   <!-- modal editar -->
+   <div class="modal-edit-container">
+      <div class="modal">
+        <button id="close-modal" onclick="closeModalEditar()">x</button>
+        <form  class="cadastrar-campo" >
+             
+
+
+              <div class="campo-container">
+                <label for="name">Nome do campo</label>
+                <input type="text" name="name" id="edit-nameCampo" required >
+              </div>
+              
+              
+              <div class="campo-container">
+                  <label for="tipo">Tipo do campo</label>
+                  <select name="tipo" id="edit-tipoCampo" onchange="mostrarLista()" required>
+                      <option value="">Selecionar</option>
+                      <option value="input">Campo Simples</option>
+                      <option value="textarea">Texto Longo</option>
+                      <option value="select">Lista com Itens</option>
+                  </select>
+
+              </div>
+              
+        
+              <div class="lista-container" id="lista-container">
+                  <div class="campo-container">
+                      <!-- Campo de entrada e botão de adição -->
+                      <label for="tipo">Adicionar Opções</label>
+                      
+                      <div>
+                          <input type="text" id="optionCampo" placeholder="Digite um item">
+                          <button type="button" onclick="adicionarItem()">Adicionar</button>
+                      </div>
+                      <small class="msg-erro">Preencha o opção</small>
+                  </div>
+                  
+                  <div class="edit-lista-container">
+                      <p class="edit-opcao-title">Opções</p>
+                      <ul  id="edit-lista">
+                       
+                      </ul>
+                  </div>
+              
+              </div>
+              
+              
+
+              
+              
+              
+              <button class="btn-salvar" type="button" id="salvar-edit-campo" onclick="editarCampo()" >Editar</button>
+
+                  
+          </form>
+        </div>
+   </div>
+
+
+
+   
+
+  
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+<script>
+
+  $(function(){
+        $('#open-modal-campo').click(function () {
+            $('.modal-add-container').addClass('active-modal-campo');
+        });
+
+        $('#close-modal-criar').click(function () {
+                $('.modal-add-container').removeClass('active-modal-campo');
+                $('#nameCampo').val('');
+                $('#tipoCampo').val('');
+                $('#optionCampo').val('');
+                $('#lista').empty();
+        });
+
+
+        //verifica o tipo de campo selecionado
+
+        $('#tipoCampo').change(function () {
+            if ($(this).val() === 'select') {
+                // Se a opção for 'select', defina display: flex
+                $('#lista-container').css('display', 'flex');
+            } else {
+                // Caso contrário, defina display: none (ou o valor padrão)
+                $('#lista-container').css('display', 'none');
+                $('#optionCampo').val('');
+            }
+        });
+       
+
+        //adiconar option
+        $('.btn-add-option').click(function () {
+                var optionValue = $('#optionCampo').val();
+                if (optionValue) {
+                    var listItem = $('<li><span>' + optionValue + '</span> <button class="btn-edit">Editar</button> <button class="btn-remove">Remover</button></li>');
+                    listItem.find('.btn-edit').click(function () {
+                        var $span = listItem.find('span');
+                        var originalValue = $span.text();
+                        $span.html('<input type="text" value="' + originalValue + '"> <button class="btn-save">Salvar</button>');
+                        $span.find('.btn-save').click(function () {
+                            var newValue = $span.find('input').val();
+                            if (newValue) {
+                                $span.html(newValue);
+                            }
+                        });
+                    });
+                    listItem.find('.btn-remove').click(function () {
+                        listItem.remove();
+                    });
+                    $('#lista').append(listItem);
+                    $('#optionCampo').val('');
+                }
+            });
+      
+})
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

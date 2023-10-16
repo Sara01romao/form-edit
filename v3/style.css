@@ -1,0 +1,369 @@
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'arial', sans-serif;
+    
+}
+
+#lista-container{
+    display: none;
+}
+
+body{
+    background: #ebeff2;
+}
+
+
+
+.form-section{
+    max-width: 1200px;
+    margin: 50px auto;
+
+    padding: 30px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.05), 0 3px 1px -2px rgba(0,0,0,.08), 0 1px 5px 0 rgba(0,0,0,.08);
+    background: #fff;
+}
+
+#formulario{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+
+.campo-container textarea{
+    height: 100px;
+    overflow: auto;
+
+}
+
+.campo-container{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    
+    
+}
+
+.campo-container input{
+
+    height: 40px;
+    border: solid 1px #CCCCCC;
+    padding: 0px 10px;
+    font-size: 16px;
+    border-radius: 4px;
+
+}
+
+.campo-container select{
+    width: 100%;
+    height: 40px;
+    border: solid 1px #CCCCCC;
+    font-size: 16px;
+    padding: 0px 10px;
+    border-radius: 4px;
+}
+
+.msg-erro{
+    color: red;
+    display: none;
+}
+
+
+.add-campo-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #F7F7F7;
+    margin-top: 50px;
+    padding-left: 15px;
+    
+}
+
+.add-campo-container button{
+    background: #0094E1;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-size: 16px;
+}
+
+
+.title-form{
+    color: #555555;
+}
+
+    
+.menu-campo{
+    display: flex;
+    justify-content: end;
+}
+
+.menu-campo button{
+    padding: 10px;
+
+}
+
+
+#formulario label{
+    font-weight: bold;
+    color: #555555;
+}
+
+
+
+
+/* modal adicionar */
+
+.modal-add-container{
+    width: 100vw;
+    background: #0000001f;
+    height: 100vh;
+    
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0px;
+    padding: 10px;
+    display: none;
+}
+
+.modal-add-container.active-modal-campo{
+    display: flex;
+}
+
+.title-modal{
+    color: #4d4d4d;
+    text-align: center;
+    margin-bottom: 14px;
+
+
+}
+
+.modal{
+max-width: 800px;
+width: 100%;
+margin: 0 auto;
+box-shadow: 0 2px 2px 0 rgba(0,0,0,.05), 0 3px 1px -2px rgba(0,0,0,.08), 0 1px 5px 0 rgba(0,0,0,.08);
+background: #fff;
+padding: 30px;
+border-radius: 4px;
+
+}
+
+#close-modal-criar{
+    margin: 0px 0px 0px auto;
+    display: block;
+    width: 30px;
+    height: 30px;
+    background: none;
+    font-size: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+}
+
+.cadastrar-campo{
+display: flex;
+align-items: center;
+flex-direction: column;
+gap: 20px;
+width: 100%;
+
+}
+
+.cadastrar-campo .campo-container{
+max-width: 100%;
+width: 100%;
+}
+
+.lista-container{
+max-width: 100%;
+width: 100%;
+}
+
+.lista-container .campo-container div{
+display: flex;
+
+}
+
+.lista-container .campo-container  input{
+max-width: 100%;
+width: 100%;
+
+}
+
+.lista-container .campo-container button{
+width: 148px;
+font-size: 15px;
+background: #0094E1;
+border: none;
+color: #fff;
+}
+
+
+/*lista option*/
+
+.opcao-title{
+    margin: 20px 0px 10px;
+}
+
+
+
+#lista li{
+    display: flex;
+}
+
+#lista li input{
+    width: 100%;
+    padding: 0px 10px;
+    font-size: 16px;
+    
+}
+
+#lista li div{
+    display: flex;
+    gap: 5px;
+    
+    
+}
+
+
+#lista li button{
+    display: inline-block;
+    width: 55px;
+    height: 35px;
+    transition: 0.5s;
+    cursor: pointer;
+    background: none;
+    border: solid 1px #CCCCCC;
+    background: #f7f7f7;
+
+}
+
+#lista li button:hover{
+    background: #dfdfdf;
+    transition: 0.5s;
+}
+
+.edit-opcao{
+    font-size: 16px;
+    color: #44BA5B;
+}
+
+.remover-opcao{
+    font-size: 20px;
+    color: #DC3545;
+}
+
+
+
+#lista li input[type="text"]:disabled{
+    background-color: rgb(247, 247, 247);
+    border: solid 1px #CCCCCC;
+    
+}
+
+
+.lista-container:not(#lista li) .opcao-title{
+    display: none;
+
+}
+
+.lista-container:has(#lista li) .opcao-title{
+    display: block;
+
+}
+
+
+.btn-salvar{
+    max-width: 180px;
+    width: 100%;
+    height: 35px;
+    border: none;
+    color: #fff;
+    background: #1c813c;
+    font-size: 16px;
+    border-radius: 4px;
+    margin-top: 60px;
+    margin: 60px auto 0px;
+
+}
+
+
+
+.form-vazio{
+    height: 200px;
+    border: 2px solid #cccccc;
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 12px;
+}
+
+
+.form-vazio p{
+    font-size: 18px;
+    max-width: 500px;
+    text-align: center;
+    line-height: 2;
+    color: #555555;
+
+}
+
+#formulario:not(:has(.novo-campo)) .form-vazio  {
+    display: flex;
+}
+
+.form-vazio {
+    display: none;
+}
+
+
+
+.novo-campo div{
+    display: flex;
+    gap: 10px;
+    margin: 0px 0px 0px auto;
+}
+
+.novo-campo div button{
+    width: 35px;
+    height: 35px;
+    border: none;
+    transition: 0.8s;
+    cursor: pointer;
+}
+
+.novo-campo div button:nth-child(1){
+    color: #1c813c;
+}
+.novo-campo div button:nth-child(2){
+    color: red;
+}
+
+.novo-campo div button:hover{
+    background-color:#c9c9c9;
+    transition: 0.8s;
+}
+
+
+/*editar*/
+
+
+.modal-edit-container{
+    display: none;
+}
+
+
+.modal-edit-container.active-modal-edit{
+    display: flex;
+}
