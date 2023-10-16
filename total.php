@@ -156,7 +156,7 @@ include './conexao.php';
         <div class="campo-container novo-campo"><div>
         <button type="button"><i class="fa fa-edit"></i></button>
         <button type="button"><i class="fa fa-xmark"></i></button>
-              </div><label for="dsada">dsada:</label><select id="dsada" name="dsada"><option value="">Selecionar</option><option value="dasda">dasda</option></select>
+              </div><label for="dsada">Teste:</label><select id="dsada" name="dsada"><option value="">Selecionar</option><option value="dasda">dasda</option></select>
         </div>
          
 
@@ -186,7 +186,7 @@ include './conexao.php';
                   <label for="tipo">Tipo do campo</label>
                   <select name="tipo" id="tipoCampo" onchange="mostrarLista()" required>
                       <option value="">Selecionar</option>
-                      <option value="input">Campo Simples</option>
+                      <option value="input">Testo Curto</option>
                       <option value="textarea">Texto Longo</option>
                       <option value="select">Lista com Itens</option>
                   </select>
@@ -830,7 +830,7 @@ function atualizarCampo(campoContainer) {
                 <button type="button" class="editar-novo-campo" onclick="editarCampo(this)"><i class="fa fa-edit"></i></button>
                 <button type="button" class="remover-novo-campo" onclick="removerCampo(this)"><i class="fa fa-xmark"></i></button>
             </div>
-            <label for="${nomeCampoAtualizado}">${nomeCampoAtualizado}:</label>
+            <label for="${nomeCampoAtualizado}">${nomeCampoAtualizado}</label>
             <select id="${nomeCampoAtualizado}" name="${nomeCampoAtualizado}">
                 <option value="">Selecionar</option>
             </select>
